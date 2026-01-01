@@ -1,70 +1,117 @@
-# Getting Started with Create React App
+Chat App with WhatsApp-Style Tagging & Dynamic Autocomplete
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+------------------------------------------------------------
+🚀 Tech Stack
+- Frontend: React, Redux Toolkit (Next.js optional for SSR)
+- Backend: Node.js, Express (mock REST API)
+- State Management: Redux
+- UI: Inline styles / CSS
+- Package Manager: npm
 
-## Available Scripts
+------------------------------------------------------------
+🎯 Features
+- WhatsApp-style tagging with @ (mentions) and # (hashtags).
+- Dynamic autocomplete suggestions fetched from backend API.
+- Suggestions update in real time as user types.
+- Admin panel to add/remove suggestions dynamically.
+- Styled tags (pill-like spans with background color).
+- Atomic backspace removal (entire tag deleted in one action).
+- Messages render with highlighted tags in chat history.
+- Hashtags are clickable → filter messages by topic.
+- Mentions are clickable → placeholder action (alert, can be extended to profile popup).
 
-In the project directory, you can run:
+------------------------------------------------------------
+🛠️ How to Run Locally
 
-### `npm start`
+1. Clone the repository:
+   git clone https://github.com/your-username/chat-app-tagging.git
+   cd chat-app-tagging
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+2. Install dependencies:
+   npm install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+3. Start backend:
+   cd backend
+   node server.js
+   (Backend runs at http://localhost:4000)
 
-### `npm test`
+4. Start frontend:
+   cd ..
+   npm start
+   (Frontend runs at http://localhost:3000)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+------------------------------------------------------------
+📐 Architecture
+- Frontend
+  - Chat.js: Renders chat window and messages.
+  - ChatInput.js: Handles input, tagging, autocomplete, atomic backspace.
+  - store/messagesSlice.js: Redux slice for messages.
+  - store/suggestionsSlice.js: Redux slice for suggestion state.
+- Backend
+  - server.js: Express server with REST endpoints:
+    - GET /suggestions?trigger=@&q=sh → fetch suggestions.
+    - POST /suggestions → add new suggestion.
+    - DELETE /suggestions → remove suggestion.
+- Data Flow
+  - User types → trigger detected → frontend calls backend → suggestions popup → user selects → tag inserted → message sent → Redux updates → UI renders with highlights.
 
-### `npm run build`
+------------------------------------------------------------
+📊 Algorithm Description
+1. Trigger Detection
+   - Monitor input for @ or #.
+   - When detected, set trigger state.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. Fetch Suggestions
+   - Call backend API with trigger and query.
+   - Backend returns filtered suggestions.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+3. Autocomplete Popup
+   - Display suggestions in dropdown.
+   - Update list as user continues typing.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+4. Tag Insertion
+   - On selection, replace typed prefix with styled span (<span contentEditable="false">).
+   - Insert trailing space for continued typing.
 
-### `npm run eject`
+5. Atomic Backspace
+   - Detect caret before a tag span.
+   - Remove entire span in one action.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+6. Message Send
+   - On Enter, dispatch message to Redux.
+   - Clear input editor.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+7. Message Rendering
+   - Split message text by regex (@word / #word).
+   - Wrap tags in styled spans.
+   - Hashtags clickable → filter messages.
+   - Mentions clickable → placeholder action.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+------------------------------------------------------------
+📜 Assumptions
+- Suggestions stored in memory (no database persistence).
+- Real-time updates simulated via REST calls.
+- Focus is on tagging/autocomplete behavior, not full chat system.
+- Next.js optional; demo uses plain React for simplicity.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+------------------------------------------------------------
+📦 Deliverables
+1. GitHub Repository Link → this repo.
+2. Notes on Approach
+   - Modular React components.
+   - Redux for predictable state.
+   - Express backend for dynamic suggestions.
+   - Inline styles for quick UI prototyping.
+3. Algorithm + Flowchart
+   - Algorithm described above.
+   - Flowchart provided separately (PDF/image).
+4. Optional Demo/GIF
+   - Short clip showing tagging + backspace removal.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+------------------------------------------------------------
+📸 Demo Preview
+- Type @ → see user suggestions.
+- Type # → see topic suggestions.
+- Select suggestion → styled tag inserted.
+- Backspace → removes entire tag.
+- Hashtag click → filters messages.

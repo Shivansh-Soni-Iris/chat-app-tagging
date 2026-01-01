@@ -1,0 +1,70 @@
+Algorithm: WhatsApp-Style Tagging & Autocomplete
+
+------------------------------------------------------------
+1. Trigger Detection
+   - Monitor user input in the chat box.
+   - If the last character typed is '@' or '#', set trigger state.
+   - Continue monitoring typed text after the trigger.
+
+2. Fetch Suggestions
+   - On each keystroke after a trigger, send request to backend:
+     GET /suggestions?trigger=<@|#>&q=<query>
+   - Backend filters suggestion list and returns matches.
+
+3. Autocomplete Popup
+   - Display returned suggestions in a dropdown below the input.
+   - Update dropdown in real time as user continues typing.
+
+4. Tag Insertion
+   - When user selects a suggestion:
+     • Remove typed prefix (e.g. '@Sh').
+     • Insert styled span element with full tag (e.g. '@Shivansh').
+     • Span is contentEditable=false to make it atomic.
+     • Add trailing space so user can continue typing.
+
+5. Atomic Backspace
+   - On Backspace key:
+     • Detect if caret is positioned before a tag span.
+     • If yes, remove the entire span in one action.
+     • Prevent partial deletion of tag text.
+
+6. Message Send
+   - On Enter key:
+     • Collect innerText of input (tags + normal text).
+     • Dispatch message to Redux store.
+     • Clear input editor.
+
+7. Message Rendering
+   - When rendering messages:
+     • Split text using regex: (@[A-Za-z0-9]+ | #[A-Za-z0-9]+).
+     • Wrap matches in styled spans for visual distinction.
+     • Mentions clickable → show alert (placeholder for profile).
+     • Hashtags clickable → filter message list by that tag.
+
+------------------------------------------------------------
+Flow Description (User Interaction + Data Flow)
+
+User types in chat box
+   ↓
+Trigger detected (@ or #)
+   ↓
+Frontend sends query to backend API
+   ↓
+Backend returns filtered suggestions
+   ↓
+Frontend shows autocomplete popup
+   ↓
+User selects suggestion
+   ↓
+Tag inserted as styled span (atomic)
+   ↓
+User continues typing or presses Enter
+   ↓
+Message dispatched to Redux store
+   ↓
+Message rendered in chat history
+   ↓
+Tags highlighted and clickable
+   ↓
+Hashtag click → filters messages
+Mention click → shows alert/profile
